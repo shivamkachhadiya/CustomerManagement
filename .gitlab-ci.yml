@@ -4,17 +4,17 @@ stages:
 
 build-job:
   stage: build
-  image: maven:3.9.6-eclipse-temurin-17
+  image: maven:3.9.6-eclipse-temurin-21
   script:
     - echo "Building Customer Management Application..."
-    - mvn clean compile
+    - mvn clean compile -Dmaven.compiler.source=21 -Dmaven.compiler.target=21
   artifacts:
     paths:
       - target/
 
 test-job:
   stage: test
-  image: maven:3.9.6-eclipse-temurin-17
+  image: maven:3.9.6-eclipse-temurin-21
   script:
     - echo "Running Unit Tests..."
-    - mvn test
+    - mvn test -Dmaven.compiler.source=21 -Dmaven.compiler.target=21
