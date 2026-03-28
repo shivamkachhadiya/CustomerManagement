@@ -7,7 +7,7 @@ build-job:
   image: maven:3.9.6-eclipse-temurin-21
   script:
     - echo "Building Customer Management Application..."
-    - mvn clean compile -Dmaven.compiler.source=21 -Dmaven.compiler.target=21
+    - mvn clean compile -Dmaven.compiler.release=21
   artifacts:
     paths:
       - target/
@@ -17,4 +17,4 @@ test-job:
   image: maven:3.9.6-eclipse-temurin-21
   script:
     - echo "Running Unit Tests..."
-    - mvn test -Dmaven.compiler.source=21 -Dmaven.compiler.target=21
+    - mvn test -Dmaven.compiler.release=21
