@@ -1,45 +1,49 @@
 package com.mycompany.customermanagement;
 
-import java.util.Date;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import com.sun.net.httpserver.HttpServer;
 
 public class CustomerManagement {
-    public static void main(String[] args) {
-        // Create customer
-        Customer customer = new Customer("John Doe", "123 Main Street");
-        System.out.println("Customer: " + customer);
+    public static void main(String[] args) throws Exception {
 
-        // Create items
-        Item item1 = new Item("Laptop", 2.5);
-        Item item2 = new Item("Mouse", 0.5);
+        HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
 
-        // Create order details
-        OrderDetail detail1 = new OrderDetail(2, "taxable", item1);
-        OrderDetail detail2 = new OrderDetail(3, "non-taxable", item2);
+        server.createContext("/", exchange -> {
 
-        // Create order
-        Order order = new Order(customer);
-        order.addOrderDetail(detail1);
-        order.addOrderDetail(detail2);
+            // Create customer
+            Customer customer = new Customer("John Doe", "123 Main Street");
 
-        // Print order summary
-        System.out.println("Order Date: " + order.getDate());
-        System.out.println("Order Status: " + order.getStatus());
-        System.out.println("Sub Total: " + order.calcSubTotal());
-        System.out.println("Tax: " + order.calcTax());
-        System.out.println("Total: " + order.calcTotal());
-        System.out.println("Total Weight: " + order.calcTotalWeight());
+            // Create items
+            Item item1 = new Item("Laptop", 2.5);
+            Item item2 = new Item("Mouse", 0.5);
 
-        // Cash payment
-        Cash cash = new Cash(500f, 600f);
-        System.out.println("Cash Tendered: " + cash.getCashTendered());
-        System.out.println("Change: " + cash.getChange());
+            // Create order details
+            OrderDetail detail1 = new OrderDetail(2, "taxable", item1);
+            OrderDetail detail2 = new OrderDetail(3, "non-taxable", item2);
 
-        // Check payment
-        Check check = new Check(200f, "John Doe", "BANK123");
-        System.out.println("Check Authorized: " + check.authorized());
+            // Create order
+            Order order = new Order(customer);
+            order.addOrderDetail(detail1);
+            order.addOrderDetail(detail2);
 
-        // Credit payment
-        Credit credit = new Credit(300f, "John Doe", "VISA", new Date(System.currentTimeMillis() + 86400000L));
-        System.out.println("Credit Authorized: " + credit.authorized());
+            // Build response
+            String response =
+                    "Customer: " + customer + "\n" +
+                    "Order Date: " + order.getDate() + "\n" +
+                    "Order Status: " + order.getStatus() + "\n" +
+                    "Sub Total: " + order.calcSubTotal() + "\n" +
+                    "Tax: " + order.calcTax() + "\n" +
+                    "Total: " + order.calcTotal() + "\n" +
+                    "Total Weight: " + order.calcTotalWeight() + "\n";
+
+            exchange.sendResponseHeaders(200, response.length());
+            OutputStream os = exchange.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
+        });
+
+        server.start();
+        System.out.println("Server started on port 8080");
     }
 }
